@@ -22,7 +22,6 @@
 import VideoBox from './VideoBox.vue'
 import config from '../config.js'
 import log from '../utils/util.js'
-import { tSUndefinedKeyword } from '@babel/types'
 export default {
     data() {
         return {
@@ -138,7 +137,7 @@ export default {
             self.setNotify({type: 'success', content: '加入会议成功'})
 
             self.switchVideo('open');
-            self.switchAudio('open');
+            // self.switchAudio('open');
             self.joinSuccess = true;
             this.joinLoading = false;
         },
@@ -156,6 +155,8 @@ export default {
             }
 
             type === 'local' ? this.localUser = user : this.remoteUser = user
+
+            console.log('+++initClientUserFromSDKUser: ', user)
         }, 
         joinRoomFaild(err) {
             console.log('+++joinRoomFaild, err: ', err)
@@ -342,9 +343,7 @@ export default {
          * @param {Object} userId－ 摄像头设备所属者ＩＤ
          */
         onCameraStatusNotify(status, cameraId, cameraName, userId) {
-            // if (userId == room.selfUser.id) {
-            // } else {
-            // }
+            
         },
         /**
          * 麦克风状态更新
@@ -354,19 +353,7 @@ export default {
          * @param {Object} userId － 麦克风设备所属者ＩＤ
          */
         onMicrophoneStatusNotify(status, microphoneId, microphoneName, userId) {
-            // if (userId == room.selfUser.id) {
-            //     if (status == StreamStatus.published) {
-            //         local_audio.className = 'openMicrophone';
-            //     } else if (status == StreamStatus.init) {
-            //         local_audio.className = 'closeMicrophone';
-            //     }
-            // } else {
-            //     if (status == StreamStatus.published) {
-            //         remote_audio.className = 'openMicrophone';
-            //     } else if (status == StreamStatus.init) {
-            //         remote_audio.className = 'closeMicrophone';
-            //     }
-            // }
+            
         },
         //订阅未订阅的视频
         onPublishCameraNotify(videos) {
@@ -406,7 +393,12 @@ export default {
          */
         onSubscribleCameraResult(stream, userId, userName, cameraId) {
             console.log('+++onSubscribleCameraResult, userId: ', userId, ',cameraId: ', cameraId)
-            this.$refs['remote'].renderStream('video', stream)
+            if (userId !== room.selfUser.id) {
+                const user = room.getUser(userId)
+                const video = user.getVideo(cameraId)
+                this.remoteUser.video = video ? video : null
+                this.$refs['remote'].renderStream('video', stream)
+            }
         },
         /**
          * 取消订阅远端视频流反馈
@@ -416,7 +408,12 @@ export default {
          */
         onUnsubscribleCameraResult(userId, userName, cameraId) {
             console.log('+++onUnsubscribleCameraResult, userId: ', userId, ',cameraId: ', cameraId)
-            this.$refs['remote'].renderStream('video', null)
+            if (userId !== room.selfUser.id) {
+                const user = room.getUser(userId)
+                const video = user.getVideo(cameraId)
+                this.remoteUser.video = video ? video : null
+                this.$refs['remote'].renderStream('video', null)
+            }
         },
         /**
          * 订阅远端音频流反馈
@@ -426,7 +423,11 @@ export default {
          */
         onSubscribleMicrophoneResult(stream, userId, userName) {
             console.log('+++onSubscribleMicrophoneResult, userId: ', userId)
-            this.$refs['remote'].renderStream('audio', stream)
+            if (userId !== room.selfUser.id) {
+                const user = room.getUser(userId)
+                this.remoteUser.audio = user.audio ? user.audio : null
+                this.$refs['remote'].renderStream('audio', stream)
+            }
         },
         /**
          * 取消订阅远端音频流反馈
@@ -435,7 +436,11 @@ export default {
          */
         onUnsubscribleMicrophoneResult(userId, userName) {
             console.log('+++onUnsubscribleMicrophoneResult, userId: ', userId)
-            this.$refs['remote'].renderStream('audio', null)
+            if (userId !== room.selfUser.id) {
+                const user = room.getUser(userId)
+                this.remoteUser.audio = user.audio ? user.audio : null
+                this.$refs['remote'].renderStream('audio', null)
+            }
         },
         setNotify(notifyObject) {
             const self = this;

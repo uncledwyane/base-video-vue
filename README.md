@@ -1,24 +1,6 @@
-# base-video-vue
+### 基于3Tee SDK 音视频Demo
 
-## Project setup
-```
-npm install
-```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
 
-### Compiles and minifies for production
-```
-npm run build
-```
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![截图](https://raw.githubusercontent.com/uncledwyane/imageBed/master/img/Snipaste_2022-08-11_23-38-43.png)

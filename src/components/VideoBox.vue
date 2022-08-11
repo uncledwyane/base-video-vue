@@ -18,7 +18,7 @@
             用户名: {{ user.name }} ({{ type === 'remote' ? '远端' : '本地' }})
         </div>
         <div class="source-video-wrap">
-            <video autoplay :controls="control" class="source-video" :srcObject="videoStream" v-show="user.video.status == 2"></video>
+            <video autoplay :controls="control" class="source-video" :srcObject="videoStream" v-show="user.video && user.video.status == 2"></video>
             <audio :srcObject="audioStream" v-show="false" autoplay></audio>
         </div>
     </div>
@@ -40,7 +40,8 @@ export default {
         return {
             control: false,
             videoStream: null,
-            audioStream: null
+            audioStream: null,
+            remoteUser: null
         }
     },
     watch: {
